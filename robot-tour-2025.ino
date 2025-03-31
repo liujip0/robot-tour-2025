@@ -5,8 +5,10 @@ const char TURN_LEFT = 'L';
 const char TURN_RIGHT = 'R';
 const char FORWARD = 'F';
 const char BACK = 'B';
+const char FIRST_FORWARD = '1';
 
 const char movements[] = {
+  FIRST_FORWARD,
   FORWARD,
   FORWARD,
   FORWARD,
@@ -54,6 +56,9 @@ void loop() {
   buttonA.waitForRelease();
   for (int i = 0; i < sizeof(movements); i++) {
     switch (movements[i]) {
+      case FIRST_FORWARD:
+        first_forward();
+        break;
       case FORWARD:
         forward();
         break;
