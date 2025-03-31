@@ -1,18 +1,15 @@
 #include <Romi32U4.h>
 #include <LSM6.h>
+#include <Wire.h>
 
 const char TURN_LEFT = 'L';
 const char TURN_RIGHT = 'R';
 const char FORWARD = 'F';
 const char BACK = 'B';
-const char FIRST_FORWARD = '1';
+const char FIRST_FORWARD = 'G';
 
 const char movements[] = {
   FIRST_FORWARD,
-  FORWARD,
-  FORWARD,
-  FORWARD,
-  FORWARD
 };
 
 Romi32U4Encoders encoders;
@@ -28,33 +25,38 @@ int leftEncoder = 0;
 int rightEncoder = 0;
 
 const int RIGHT_MOTOR_SPEED = 100;
-const int LEFT_MOTOR_SPEED = round(1.0595 * RIGHT_MOTOR_SPEED); // 1.077 // 1.065 // 1.0655
+const int LEFT_MOTOR_SPEED = round(1.0595 * RIGHT_MOTOR_SPEED);  // 1.077 // 1.065 // 1.0655
 const int RIGHT_TURN_ENCODER_COUNTS = 737;
 const int LEFT_TURN_ENCODER_COUNTS = 739;
 const int FORWARD_ENCODER_COUNTS = 3250;
-const int FIRST_FORWARD_ENCODER_COUNTS = round(0.6 * FORWARD_ENCODER_COUNTS);
+const int FIRST_FORWARD_ENCODER_COUNTS = round((35.0 / 50.0) * FORWARD_ENCODER_COUNTS);
 
 void setup() {
   // put your setup code here, to run once:
+  Serial.begin(9600);
+  Wire.begin();
+
   leftEncoder = encoders.getCountsAndResetLeft();
   rightEncoder = encoders.getCountsAndResetRight();
 
-  imu.init();
+  if (!imu.init()) {
+    buzzer.play("BAG");
+    Serial.println("imu init failed");
+  }
+  Serial.println("Test");
   imu.enableDefault();
   imu.writeReg(LSM6::CTRL2_G, 0b10001000);
   imu.read();
   imu.g.x;
-
-  Serial.begin(9600);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  // Serial.write("");
-  // Serial.println();
   buttonA.waitForPress();
   buttonA.waitForRelease();
   for (int i = 0; i < sizeof(movements); i++) {
+    imu.read();
+    Serial.println();
     switch (movements[i]) {
       case FIRST_FORWARD:
         first_forward();
