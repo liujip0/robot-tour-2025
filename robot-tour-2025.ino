@@ -1,5 +1,5 @@
 #include <Romi32U4.h>
-// Need AStar32U4 library
+// Need Romi32U4 library
 // Follow https://www.pololu.com/docs/0j61/all#6.2
 
 const char TURN_LEFT = 'L';
